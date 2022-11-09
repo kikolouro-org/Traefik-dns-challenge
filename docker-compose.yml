@@ -1,0 +1,36 @@
+version: "3.5"
+
+services:      
+  traefik:
+    image: traefik:v2.8
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 30022:30022
+      - 50000:50000
+      - 9300:9300
+      - 5044:5044
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./dynamic.yml:/etc/traefik/dynamic.yml
+      - ./cert:/etc/traefik/cert
+      - ./letsencrypt.json:/letsencrypt.json
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      default:
+      traefik:
+    command: >
+      --log.level=DEBUG
+      
+      
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=eu-west-1
+networks:
+  default:
+    name: traefik-internal
+  traefik:
+    name: traefik

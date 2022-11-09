@@ -1,0 +1,34 @@
+http:
+  routers:
+    api:
+      entryPoints:
+        - websecure
+      rule: Host(`traefik.flouro.mydbsapps.com`)
+      service: api@internal
+      tls:
+        certresolver: leresolver
+      middlewares:
+        - authInternal
+    webmin:
+        entryPoints:
+          - websecure
+        rule: Host(`webmin.flouro.mydbsapps.com`)
+        service: webmin-svc
+
+  middlewares:
+    authInternal:
+      basicAuth:
+        users:
+          - "traefik:$apr1$LzRqe67C$AN.6YZ3KlV71Tg2rOBVx9."
+  services:
+    webmin-svc:
+      loadBalancer:
+        servers:
+          - url: "https://172.17.0.1:10000"
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/cert/certs/cert.pem
+        keyFile: /etc/traefik/cert/certs/key.pem
+
